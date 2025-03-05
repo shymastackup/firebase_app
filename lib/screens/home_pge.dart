@@ -1,33 +1,10 @@
-import 'package:backend_project/login_page.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/material.dart';
 
+import 'package:backend_project/login_page.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({super.key});
-
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<void> signOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut(); 
-      await _googleSignIn.signOut(); 
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logged out from Google!')),
-      );
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error logging out: ${e.toString()}')),
-      );
-    }
-  }
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +15,22 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.exit_to_app),
-            onPressed: () => signOut(context),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Logged out successfully!')),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Failed to log out. Please try again.')),
+                );
+              }
+            },
           ),
         ],
       ),
@@ -73,10 +65,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
